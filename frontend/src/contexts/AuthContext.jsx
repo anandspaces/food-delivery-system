@@ -1,49 +1,49 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 
-// Create context
 const AuthContext = createContext();
 
-// Provide the AuthContext to components
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
-
 export const AuthProvider = ({ children }) => {
-  const [authToken, setAuthToken] = useState(localStorage.getItem('token') || null);
-  const [user, setUser] = useState(null);
+  const [auth, setAuth] = useState({ token: null, user: null });
 
-  // Check if the user is logged in when the app loads
   useEffect(() => {
-    if (authToken) {
-      // Optionally, verify the token by calling an API to fetch the user info
-      axios
-        .get('http://localhost:5000/verify-token', {
-          headers: { Authorization: `Bearer ${authToken}` },
-        })
-        .then((response) => setUser(response.data))
-        .catch((error) => {
-          console.error('Token verification failed:', error);
-          setAuthToken(null);
-          localStorage.removeItem('token');
-        });
+    // Check if there is a saved JWT in localStorage
+    const savedToken = localStorage.getItem('authToken');
+    if (savedToken) {
+      setAuth({ token: savedToken });
+      // Optionally, fetch the user data with the token if needed
     }
-  }, [authToken]);
+  }, []);
 
-  const login = (token) => {
-    setAuthToken(token);
-    localStorage.setItem('token', token);
+  const login = async (username, password) => {
+    try {
+      const { data } = await axios.post('http://localhost:5000/api/users/login', { username, password });
+      const { token } = data;
+      setAuth({ token });
+      localStorage.setItem('authToken', token);
+    } catch (error) {
+      console.error("Login error:", error);
+    }
   };
 
   const logout = () => {
-    setAuthToken(null);
-    setUser(null);
-    localStorage.removeItem('token');
+    setAuth({ token: null, user: null });
+    localStorage.removeItem('authToken');
+  };
+
+  const register = async (username, password) => {
+    try {
+      await axios.post('http://localhost:5000/api/users/register', { username, password });
+    } catch (error) {
+      console.error("Registration error:", error);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ authToken, user, login, logout }}>
+    <AuthContext.Provider value={{ auth, login, logout, register }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+export const useAuth = () => useContext(AuthContext);

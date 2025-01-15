@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const RegisterPage = () => {
+  const { register } = useAuth();  // Use AuthContext for registration
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -18,20 +19,17 @@ const RegisterPage = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/users/register', { username, password });
-      console.log('Registration successful:', response);
-      navigate('/login'); // Redirect to login page after successful registration
+      await register(username, password);  // Register using AuthContext
+      navigate('/login');  // Redirect to login after registration
     } catch (err) {
-      console.error('Registration failed', err);
-      setError(err.response ? err.response.data.message : 'An error occurred');
+      setError('Error registering user');
     }
   };
 
   return (
-    <div className="max-w-sm mx-auto p-4">
-      <h2 className="text-xl font-bold mb-4">Register</h2>
-      {error && <p className="text-red-500">{error}</p>}
-      <form onSubmit={handleRegister} className="space-y-4">
+    <div>
+      <h1>Register</h1>
+      <form onSubmit={handleRegister}>
         <input
           type="text"
           placeholder="Username"
@@ -56,7 +54,8 @@ const RegisterPage = () => {
           className="w-full p-2 border"
           required
         />
-        <button type="submit" className="w-full bg-blue-500 text-white p-2">Register</button>
+        {error && <p>{error}</p>}
+        <button type="submit">Register</button>
       </form>
       <div className="mt-4">
         <p>Already have an account? <a href="/login" className="text-blue-500">Login here</a></p>
