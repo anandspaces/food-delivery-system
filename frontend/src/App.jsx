@@ -4,7 +4,7 @@ import { AuthProvider } from './contexts/AuthContext'; // Import AuthProvider
 import LoginPage from './pages/LoginPage';
 import MenuPage from './pages/MenuPage';
 import OrderPage from './pages/OrderPage';
-import Cart from './components/Cart';
+import Cart from './pages/Cart';
 
 const App = () => (
   <AuthProvider>
