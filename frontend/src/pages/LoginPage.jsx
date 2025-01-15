@@ -12,7 +12,7 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/login', { username, password });
+      const response = await axios.post('http://localhost:5000/api/users/login', { username, password });
       login(response.data.token); // Save token in context
       navigate('/menu'); // Redirect to menu page
     } catch (error) {
