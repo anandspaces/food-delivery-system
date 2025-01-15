@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { CartProvider } from './contexts/CartContext';
-import LoginPage from './components/LoginPage';
-import MenuPage from './components/MenuPage';
+import LoginPage from './pages/LoginPage';
+import MenuPage from './pages/MenuPage';
+import OrderPage from './pages/OrderPage';
 import Cart from './components/Cart';
-import OrderPage from './components/OrderPage';
 
 const App = () => (
   <CartProvider>
